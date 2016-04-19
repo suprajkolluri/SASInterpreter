@@ -1,0 +1,10 @@
+PSTART
+MSTART
+STORE a,5
+STORE b,6
+STORE c,0
+ADD c,a,b
+PRINT "The sum is "
+PRINT c
+MEND
+PEND
