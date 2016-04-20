@@ -4,5 +4,5 @@ import edu.ase.se.sas.exceptions.RuntimeException;
 
 public interface INativeMethodExecutor {
 
-	public void execute(String params) throws RuntimeException;
+	public boolean execute(String params) throws RuntimeException;
 }

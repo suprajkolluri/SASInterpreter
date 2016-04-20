@@ -8,13 +8,12 @@ import edu.ase.se.sas.exceptions.RuntimeException;
 public class SASRunner {
 	public static void main(String[] args) {
 		String errorPrefix = "Unable to interpret the code, Reason: ";
-		String fileName = "C:/eclipseworkspaces/SER502/Interpreter/src/main/resources/Scopes.sas";// args[0];
+		String fileName = "C:/Users/Supraj/git/SASInterpreter/Interpreter/src/main/resources/NestedFunctions.SAS";// args[0];
 		try {
 			Loader loader = new Loader(fileName);
-			Runtime runtime = new Runtime();
-			runtime.run(loader);
+			Runtime.run(loader);
 		} catch (FileReadException | RuntimeException e) {
-			System.out.println(errorPrefix + e.getClass()+ " " + e.getMessage());
+			System.out.println(errorPrefix + e.getClass() + " " + e.getMessage() + " " + e.getCause());
 		}
 	}
 }

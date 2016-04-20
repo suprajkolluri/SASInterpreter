@@ -4,17 +4,15 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import edu.ase.se.sas.core.runtime.Runtime;
 import edu.ase.se.sas.exceptions.FileReadException;
+import edu.ase.se.sas.exceptions.RuntimeException;
 
 public class Loader {
 
 	private String fileName;
-	public Map<Integer, String> instructionMap = new HashMap<Integer, String>();
-	public Map<String, Integer> methodIndexMap = new HashMap<String, Integer>();
+
 	public int mStartNo;
 	public int mEndNo;
 	private boolean funcVar = false;
@@ -40,7 +38,7 @@ public class Loader {
 			String line = null;
 			int lineNo = 1;
 			while ((line = br.readLine()) != null) {
-				instructionMap.put(lineNo, line);
+				Runtime.instructionMap.put(lineNo, line);
 				switch (line) {
 				case "MSTART":
 					funcVar = true;
@@ -58,9 +56,24 @@ public class Loader {
 							String param = line.split(" +")[1];
 							String var = param.split(",")[0].trim();
 							String value = param.split(",")[1].trim();
-							Object val = value;
+							Object val;
+							try {
+								val = NativeMethodExecutor.getParsedValue(value);
+							} catch (RuntimeException e) {
+								throw new FileReadException("Unable to read the value " + value, e);
+							}
 							Runtime.globalVarMap.put(var, val);
 						}
+						break;
+					case "FUNC":
+						funcVar = true;
+						String param = line.split(" +")[1];
+						String funcName = param.split(",")[0].trim();
+						Runtime.methodIndexMap.put(funcName, lineNo);
+						break;
+					case "FEND":
+						funcVar = false;
+						break;
 					}
 					break;
 				}
@@ -68,7 +81,6 @@ public class Loader {
 				lineNo++;
 			}
 
-			br.close();
 		} catch (IOException e) {
 			throw new FileReadException("Error while reading the source file.", e);
 		} finally {

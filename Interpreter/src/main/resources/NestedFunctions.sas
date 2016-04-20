@@ -1,0 +1,21 @@
+PSTART
+STORE m,10
+MSTART
+GOTO add,2,1
+MEND
+FUNC add,x,y
+ADD z,x,y
+PRINT "THE sum is "
+PRINTLN z
+GOTO sub,m,z
+BSTART
+STORE m,9
+GOTO sub,m,z
+BEND
+FEND
+FUNC sub,x,y
+SUB z,x,y
+PRINT "THE sub is "
+PRINTLN z
+FEND
+PEND
