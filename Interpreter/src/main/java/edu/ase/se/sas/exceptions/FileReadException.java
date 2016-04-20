@@ -1,5 +1,10 @@
 package edu.ase.se.sas.exceptions;
 
+/**
+ * 
+ * FileReadException is thrown when something goes wrong while reading the file.
+ *
+ */
 public class FileReadException extends Exception {
 	private static final long serialVersionUID = 5217521319441589270L;
 

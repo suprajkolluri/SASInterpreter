@@ -7,45 +7,66 @@ import edu.ase.se.sas.core.components.Entry;
 import edu.ase.se.sas.core.runtime.Runtime;
 import edu.ase.se.sas.exceptions.RuntimeException;
 
+/**
+ * 
+ * The NativeMethodExecutor implements INativeMethodExecutor and defines the
+ * logic to be executed when an OP code is encountered.
+ *
+ *
+ */
 public enum NativeMethodExecutor implements INativeMethodExecutor {
 
+	/**
+	 * Prints either a String, Boolean or an Integer Value directly or that is
+	 * stored in a variable.
+	 */
 	PRINT {
 		@Override
 		public boolean execute(String params) throws RuntimeException {
 			if (params.matches("\".*\"")) {
 				System.out.print(params.substring(1, params.length() - 1));
 			} else {
-				System.out.print(getParsedValue(params));
+				System.out.print(ParameterParser.getParsedValue(params));
 			}
 			return true;
 		}
 	},
+	/**
+	 * Prints either a String, Boolean or an Integer Value directly or that is
+	 * stored in a variable in a new line.
+	 */
 	PRINTLN {
 		@Override
 		public boolean execute(String params) throws RuntimeException {
 			if (params.matches("\".*\"")) {
 				System.out.println(params.substring(1, params.length() - 1));
 			} else {
-				System.out.println(getParsedValue(params));
+				System.out.println(ParameterParser.getParsedValue(params));
 			}
 			return true;
 		}
 	},
+	/**
+	 * Stores a variable in the {@link Entry#symbolTable} for a given scope.
+	 */
 	STORE {
 		@Override
 		public boolean execute(String params) throws RuntimeException {
-			String[] paramArr = getParams(params);
+			String[] paramArr = ParameterParser.getParams(params);
 			String varName = paramArr[0].trim();
 			String value = paramArr[1].trim();
 
-			Object val = getParsedValue(value);
+			Object val = ParameterParser.getParsedValue(value);
 
 			Entry entry = Runtime.entryStack.peek();
-			int scope = entry.valueMap.size();
-			entry.valueMap.get(scope).put(varName, val);
+			int scope = entry.symbolTable.size();
+			entry.symbolTable.get(scope).put(varName, val);
 			return true;
 		}
 	},
+	/**
+	 * Adds two numbers and stores the result in a variable.
+	 */
 	ADD {
 		@Override
 		public boolean execute(String params) throws RuntimeException {
@@ -53,6 +74,9 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 			return true;
 		}
 	},
+	/**
+	 * Subtracts two numbers and stores the result in a variable.
+	 */
 	SUB {
 		@Override
 		public boolean execute(String params) throws RuntimeException {
@@ -60,6 +84,9 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 			return true;
 		}
 	},
+	/**
+	 * Multiplies two numbers and stores the result in a variable.
+	 */
 	MUL {
 		@Override
 		public boolean execute(String params) throws RuntimeException {
@@ -67,6 +94,9 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 			return true;
 		}
 	},
+	/**
+	 * Divides two numbers and stores the result in a variable.
+	 */
 	DIV {
 		@Override
 		public boolean execute(String params) throws RuntimeException {
@@ -74,28 +104,40 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 			return true;
 		}
 	},
+	/**
+	 * Increments the scope in the {@link Entry#symbolTable}.
+	 */
 	BSTART {
 		@Override
 		public boolean execute(String params) throws RuntimeException {
 			Entry entry = Runtime.entryStack.peek();
-			int scope = entry.valueMap.size();
-			entry.valueMap.put(scope + 1, new HashMap<String, Object>());
+			int scope = entry.symbolTable.size();
+			entry.symbolTable.put(scope + 1, new HashMap<String, Object>());
 			return true;
 		}
 	},
+	/**
+	 * Decrements the scope in the {@link Entry#symbolTable}.
+	 */
 	BEND {
 		@Override
 		public boolean execute(String params) throws RuntimeException {
 			Entry entry = Runtime.entryStack.peek();
-			int scope = entry.valueMap.size();
-			entry.valueMap.remove(scope);
+			int scope = entry.symbolTable.size();
+			entry.symbolTable.remove(scope);
 			return true;
 		}
 	},
+	/**
+	 * Pushes a new entry onto the {@link Runtime#entryStack}
+	 * 
+	 * Copies the parameter values to the function arguments in the
+	 * {@link Entry#symbolTable}
+	 */
 	GOTO {
 		@Override
 		public boolean execute(String params) throws RuntimeException {
-			String[] paramArr = getParams(params);
+			String[] paramArr = ParameterParser.getParams(params);
 			String funcName = paramArr[0];
 			Integer lineNo = Runtime.methodIndexMap.get(funcName);
 
@@ -106,23 +148,26 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 			Map<String, Object> methodValMap = new HashMap<String, Object>();
 			if (paramArr.length > 1) {
 				String instruction = Runtime.instructionMap.get(lineNo);
-				String[] methodParams = getParams(instruction);
+				String[] methodParams = ParameterParser.getParams(instruction);
 				if (paramArr.length != methodParams.length) {
 					throw new RuntimeException(funcName + " Function parameters mismatch Exception");
 				}
 				for (int i = 1; i < paramArr.length; i++) {
-					Object val = getParsedValue(paramArr[i]);
+					Object val = ParameterParser.getParsedValue(paramArr[i]);
 					methodValMap.put(methodParams[i], val);
 				}
 			}
 			Entry entry = new Entry();
-			entry.valueMap.put(1, methodValMap);
+			entry.symbolTable.put(1, methodValMap);
 			Runtime.entryStack.push(entry);
 			Runtime.runMethod(lineNo + 1);
 			return true;
 		}
 	},
 
+	/**
+	 * Stops the execution of the program.
+	 */
 	MEND {
 		@Override
 		public boolean execute(String params) throws RuntimeException {
@@ -130,6 +175,9 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 		}
 
 	},
+	/**
+	 * Returns the control back to the calling function.
+	 */
 	FEND {
 		@Override
 		public boolean execute(String params) throws RuntimeException {
@@ -138,44 +186,34 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 		}
 
 	},
+	/**
+	 * Returns the control back to the calling function and pushes the return
+	 * value onto the {@link Runtime#returnValStack}
+	 */
 	RETURN {
 		@Override
 		public boolean execute(String params) throws RuntimeException {
-			Object returnVal = getParsedValue(params);
+			Object returnVal = ParameterParser.getParsedValue(params);
 			Runtime.returnValStack.push(returnVal);
 			Runtime.entryStack.pop();
 			return false;
 		}
 	};
 
-	private static Object getValue(String var) throws RuntimeException {
-		Object returnVal = null;
-		Entry entry = Runtime.entryStack.peek();
-		int scope = entry.valueMap.size();
-		while (scope >= 1) {
-			Map<String, Object> map = entry.valueMap.get(scope);
-			if (map.containsKey(var)) {
-				returnVal = map.get(var);
-				break;
-			} else {
-				scope--;
-			}
-		}
-		if (returnVal == null) {
-			returnVal = Runtime.globalVarMap.get(var);
-			if (returnVal == null) {
-				throw new RuntimeException(var + ": Variable not declared");
-			}
-		}
-		return returnVal;
-
-	}
-
+	/**
+	 * 
+	 * @param opName
+	 *            The Op Code of the instruction
+	 * @param params
+	 *            The parameters to the OP Code
+	 * @throws RuntimeException
+	 *             When something goes wrong during the execution.
+	 */
 	private static void doMathOp(String opName, String params) throws RuntimeException {
 		Entry entry = Runtime.entryStack.peek();
-		int scope = entry.valueMap.size();
-		Map<String, Object> valMap = entry.valueMap.get(scope);
-		String[] paramArr = getParams(params);
+		int scope = entry.symbolTable.size();
+		Map<String, Object> valMap = entry.symbolTable.get(scope);
+		String[] paramArr = ParameterParser.getParams(params);
 		String varName = paramArr[0].trim();
 		Integer val1;
 		Integer val2;
@@ -184,12 +222,12 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 		if (opr1.matches("^\\d+$")) {
 			val1 = Integer.parseInt(opr1);
 		} else {
-			val1 = (Integer) getValue(opr1);
+			val1 = (Integer) ParameterParser.getValue(opr1);
 		}
 		if (opr2.matches("^\\d+$")) {
 			val2 = Integer.parseInt(opr2);
 		} else {
-			val2 = (Integer) getValue(opr2);
+			val2 = (Integer) ParameterParser.getValue(opr2);
 		}
 
 		switch (opName) {
@@ -207,27 +245,6 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 			break;
 		}
 
-	}
-
-	private static String[] getParams(String params) {
-		return params.split(",");
-	}
-
-	public static Object getParsedValue(String value) throws RuntimeException {
-		Object val = null;
-		if ("POP()".equals(value)) {
-			return Runtime.returnValStack.pop();
-		}
-		if (value.matches("^\\d+$")) {
-			val = Integer.parseInt(value);
-		} else if (value.matches("T|F")) {
-			val = (value == "T") ? true : false;
-		} else if (value.matches("\".*\"")) {
-			val = value.substring(1, value.length() - 1);
-		} else {
-			val = getValue(value);
-		}
-		return val;
 	}
 
 }

@@ -9,27 +9,66 @@ import edu.ase.se.sas.core.runtime.Runtime;
 import edu.ase.se.sas.exceptions.FileReadException;
 import edu.ase.se.sas.exceptions.RuntimeException;
 
+/**
+ * 
+ * This class is used to load the intermediate code and map the line numbers to
+ * the instruction as well as to the method names.
+ *
+ */
 public class Loader {
 
+	/**
+	 * The file name of the intermediate code
+	 */
 	private String fileName;
 
+	/**
+	 * The line number where the main method starts.
+	 */
 	public int mStartNo;
-	public int mEndNo;
+
+	/**
+	 * Indicates if the variable is a function variable or a global variable.
+	 */
 	private boolean funcVar = false;
 
+	/**
+	 * 
+	 * @param fileName
+	 *            The file name of the intermediate code.
+	 * @throws FileReadException
+	 *             When something goes wrong while loading the file.
+	 */
 	public Loader(String fileName) throws FileReadException {
 		this.fileName = fileName;
 		readFile();
 	}
 
+	/**
+	 * {@link Loader#fileName}}
+	 * 
+	 * @return the file name of the intermediate code.
+	 */
 	public String getFileName() {
 		return fileName;
 	}
 
+	/**
+	 * {@link Loader#fileName}}
+	 * 
+	 * @param fileName
+	 *            the file name of the intermediate code.
+	 */
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
 
+	/**
+	 * Reads the file and maps function names and instructions.
+	 * 
+	 * @throws FileReadException
+	 *             When something goes wrong while loading the file.
+	 */
 	private void readFile() throws FileReadException {
 		BufferedReader br = null;
 		try {
@@ -46,7 +85,6 @@ public class Loader {
 					break;
 				case "MEND":
 					funcVar = false;
-					mEndNo = lineNo;
 					break;
 				default:
 					String opCode = line.split(" +")[0];
@@ -58,7 +96,7 @@ public class Loader {
 							String value = param.split(",")[1].trim();
 							Object val;
 							try {
-								val = NativeMethodExecutor.getParsedValue(value);
+								val = ParameterParser.getParsedValue(value);
 							} catch (RuntimeException e) {
 								throw new FileReadException("Unable to read the value " + value, e);
 							}

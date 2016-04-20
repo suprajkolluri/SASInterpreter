@@ -5,10 +5,19 @@ import edu.ase.se.sas.core.utilities.Loader;
 import edu.ase.se.sas.exceptions.FileReadException;
 import edu.ase.se.sas.exceptions.RuntimeException;
 
+/**
+ * 
+ * SASRunner is the entry point of the interpreter, which loads and runs the SAS
+ * intermediate code.
+ * 
+ * The name of the file to be interpreted must be passed as the first java
+ * command line argument.
+ *
+ */
 public class SASRunner {
 	public static void main(String[] args) {
 		String errorPrefix = "Unable to interpret the code, Reason: ";
-		String fileName = "C:/Users/Supraj/git/SASInterpreter/Interpreter/src/main/resources/NestedFunctions.SAS";// args[0];
+		String fileName = args[0];
 		try {
 			Loader loader = new Loader(fileName);
 			Runtime.run(loader);
