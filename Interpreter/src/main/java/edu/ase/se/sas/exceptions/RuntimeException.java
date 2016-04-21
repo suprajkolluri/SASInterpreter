@@ -2,7 +2,7 @@ package edu.ase.se.sas.exceptions;
 
 /**
  * 
- * FileReadException is thrown when something goes wrong while executing the
+ * RuntimeException is thrown when something goes wrong while executing the
  * program.
  *
  */
