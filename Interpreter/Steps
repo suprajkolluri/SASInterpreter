@@ -1,4 +1,4 @@
 Steps:
 1- antlr4 *.g4
 2- javac **.java
-3- grun *[-.g4] r -gui input
+3- grun *[-.g4] program -gui input

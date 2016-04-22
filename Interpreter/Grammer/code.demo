@@ -1,5 +1,3 @@
 [
-INTEGER F(){
-RETURN 7
-}
+INTEGER f
 ]

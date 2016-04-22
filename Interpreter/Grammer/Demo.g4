@@ -20,7 +20,7 @@ ELSE:'ELSE';
 
 ifblock:IF WS '(' conditional ')';
 	  	  
-NEWLINE:'\r''\n';         	
+NEWLINE:'\n';         	
 			
 INT: [0-9]+;
 				 
