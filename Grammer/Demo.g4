@@ -5,7 +5,7 @@ program:PSTART NEWLINE (exp NEWLINE)* (block NEWLINE)* (exp NEWLINE)* PEND;
 
 block:funcDeclare
       |IF '('conditional')' block
-      |IF '('conditional')' block NEWLINE ELSE block  
+      |IF '('conditional')' block NEWLINE ELSE (WS)* block  
 	  |WHILE '('conditional')' block
       |BSTART NEWLINE (exp NEWLINE)* (block NEWLINE)+ (exp NEWLINE)* BEND
       |BSTART NEWLINE (exp NEWLINE)* BEND ;
