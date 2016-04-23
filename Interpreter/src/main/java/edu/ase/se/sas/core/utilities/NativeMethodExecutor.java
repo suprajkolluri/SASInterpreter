@@ -105,6 +105,101 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 		}
 	},
 	/**
+	 * Compares if first operand is less than the second and stores true or
+	 * false in a variable.
+	 */
+	LT {
+		@Override
+		public boolean execute(String params) throws RuntimeException {
+			doMathOp("LT", params);
+			return true;
+		}
+	},
+	/**
+	 * Compares if first operand is less than or equal to the second and stores
+	 * true or false in a variable.
+	 */
+	LTE {
+		@Override
+		public boolean execute(String params) throws RuntimeException {
+			doMathOp("LTE", params);
+			return true;
+		}
+	},
+	/**
+	 * Compares if first operand is greater than the second and stores true or
+	 * false in a variable.
+	 */
+	GT {
+		@Override
+		public boolean execute(String params) throws RuntimeException {
+			doMathOp("GT", params);
+			return true;
+		}
+	},
+	/**
+	 * Compares if first operand is greater than or equal to the second and
+	 * stores true or false in a variable.
+	 */
+	GTE {
+		@Override
+		public boolean execute(String params) throws RuntimeException {
+			doMathOp("GTE", params);
+			return true;
+		}
+	},
+	/**
+	 * Compares if first operand is equal to the second and stores true or false
+	 * in a variable.
+	 */
+	EQ {
+		@Override
+		public boolean execute(String params) throws RuntimeException {
+			Entry entry = Runtime.entryStack.peek();
+			int scope = entry.symbolTable.size();
+			Map<String, Object> valMap = entry.symbolTable.get(scope);
+			String[] paramArr = ParameterParser.getParams(params);
+			String varName = paramArr[0].trim();
+			String opr1 = paramArr[1].trim();
+			String opr2 = paramArr[2].trim();
+			Object val1 = ParameterParser.getParsedValue(opr1);
+			Object val2 = ParameterParser.getParsedValue(opr2);
+			valMap.put(varName, val1 == val2);
+			return true;
+		}
+	},
+	/**
+	 * Performs AND operation on 2 operands and saves the result in a variable.
+	 */
+	AND {
+		@Override
+		public boolean execute(String params) throws RuntimeException {
+			doBoolOps("AND", params);
+			return true;
+		}
+	},
+	/**
+	 * Performs OR operation on 2 operands and saves the result in a variable.
+	 */
+	OR {
+		@Override
+		public boolean execute(String params) throws RuntimeException {
+			doBoolOps("OR", params);
+			return true;
+		}
+	},
+	/**
+	 * Performs NOT operation on the operands and saves the result in a
+	 * variable.
+	 */
+	NOT {
+		@Override
+		public boolean execute(String params) throws RuntimeException {
+			doBoolOps("NOT", params);
+			return true;
+		}
+	},
+	/**
 	 * Increments the scope in the {@link Entry#symbolTable}.
 	 */
 	BSTART {
@@ -243,8 +338,64 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 		case "DIV":
 			valMap.put(varName, val1 / val2);
 			break;
+		case "LT":
+			valMap.put(varName, val1 < val2);
+			break;
+		case "LTE":
+			valMap.put(varName, val1 <= val2);
+			break;
+		case "GT":
+			valMap.put(varName, val1 > val2);
+			break;
+		case "GTE":
+			valMap.put(varName, val1 >= val2);
+			break;
 		}
-
 	}
 
+	/**
+	 * 
+	 * @param opName
+	 *            The Op Code of the instruction
+	 * @param params
+	 *            The parameters to the OP Code
+	 * @throws RuntimeException
+	 *             When something goes wrong during the execution.
+	 */
+	private static void doBoolOps(String opName, String params) throws RuntimeException {
+		Entry entry = Runtime.entryStack.peek();
+		int scope = entry.symbolTable.size();
+		Map<String, Object> valMap = entry.symbolTable.get(scope);
+		String[] paramArr = ParameterParser.getParams(params);
+		String varName = paramArr[0].trim();
+		Boolean val1;
+		Boolean val2 = null;
+		String opr1 = paramArr[1].trim();
+		if (opr1.matches("T|F")) {
+			val1 = Boolean.parseBoolean(opr1);
+		} else {
+			val1 = (Boolean) ParameterParser.getValue(opr1);
+		}
+		String opr2;
+		if (paramArr.length > 2) {
+			opr2 = paramArr[2].trim();
+			if (opr2.matches("T|F")) {
+				val1 = Boolean.parseBoolean(opr2);
+			} else {
+				val2 = (Boolean) ParameterParser.getValue(opr2);
+			}
+		}
+
+		switch (opName) {
+		case "AND":
+			valMap.put(varName, val1 && val2);
+			break;
+		case "OR":
+			valMap.put(varName, val1 || val2);
+			break;
+		case "NOT":
+			valMap.put(varName, !val1);
+			break;
+		}
+	}
 }

@@ -40,7 +40,7 @@ public class ParameterParser {
 		if (value.matches("^\\d+$")) {
 			val = Integer.parseInt(value);
 		} else if (value.matches("T|F")) {
-			val = (value == "T") ? true : false;
+			val = (value.equals("T")) ? true : false;
 		} else if (value.matches("\".*\"")) {
 			val = value.substring(1, value.length() - 1);
 		} else {

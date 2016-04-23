@@ -1,0 +1,23 @@
+PSTART
+MSTART
+STORE a,11
+IF
+LT $1,a,10
+CHECKT $1,21,10
+BSTART
+PRINTLN "a is less than 10"
+BEND
+ELSE
+IF
+LT $2,a,15
+CHECKT $2,21,17
+BSTART
+PRINTLN "a is less than 15"
+BEND
+ELSE
+BSTART
+PRINTLN "a is greater than 15"
+BEND
+PRINT "IF ELSE block has ended"
+MEND
+PEND
