@@ -7,7 +7,7 @@ AND c,a,b
 PRINTLN c
 OR c,a,b
 PRINTLN c
-NOT c,a
+NOT c,F
 PRINTLN c
 MEND
 PEND

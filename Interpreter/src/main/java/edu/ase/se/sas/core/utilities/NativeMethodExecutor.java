@@ -220,6 +220,11 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 			Entry entry = Runtime.entryStack.peek();
 			int scope = entry.symbolTable.size();
 			entry.symbolTable.remove(scope);
+			if (Runtime.inIf) {
+				Runtime.inIf = false;
+				Runtime.runCode(Runtime.ifTrueLine);
+				return false;
+			}
 			return true;
 		}
 	},
@@ -255,7 +260,7 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 			Entry entry = new Entry();
 			entry.symbolTable.put(1, methodValMap);
 			Runtime.entryStack.push(entry);
-			Runtime.runMethod(lineNo + 1);
+			Runtime.runCode(lineNo + 1);
 			return true;
 		}
 	},
@@ -291,6 +296,50 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 			Object returnVal = ParameterParser.getParsedValue(params);
 			Runtime.returnValStack.push(returnVal);
 			Runtime.entryStack.pop();
+			if (Runtime.inIf) {
+				Runtime.inIf = false;
+			}
+			return false;
+		}
+	},
+	/**
+	 * Indicates the code has entered an if block.
+	 */
+	IF {
+		@Override
+		public boolean execute(String params) throws RuntimeException {
+			Runtime.inIf = true;
+			return true;
+		}
+	},
+	/**
+	 * Indicates code has entered an else block.
+	 */
+	ELSE {
+		@Override
+		public boolean execute(String params) throws RuntimeException {
+			Runtime.inIf = false;
+			return true;
+		}
+	},
+	/**
+	 * Checks if a given variable is true or false and based on the value jumps
+	 * to a certain line to execute the code.
+	 */
+	CHECKT {
+		@Override
+		public boolean execute(String params) throws RuntimeException {
+			String[] paramArr = ParameterParser.getParams(params);
+			String varName = paramArr[0].trim();
+			boolean value = (boolean) ParameterParser.getParsedValue(varName);
+			Integer opr1 = Integer.parseInt(paramArr[1].trim());
+			Integer opr2 = Integer.parseInt(paramArr[2].trim());
+			if (value) {
+				Runtime.ifTrueLine = opr1;
+				Runtime.runCode(Runtime.execLine + 1);
+			} else {
+				Runtime.runCode(opr2);
+			}
 			return false;
 		}
 	};
@@ -310,20 +359,10 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 		Map<String, Object> valMap = entry.symbolTable.get(scope);
 		String[] paramArr = ParameterParser.getParams(params);
 		String varName = paramArr[0].trim();
-		Integer val1;
-		Integer val2;
 		String opr1 = paramArr[1].trim();
 		String opr2 = paramArr[2].trim();
-		if (opr1.matches("^\\d+$")) {
-			val1 = Integer.parseInt(opr1);
-		} else {
-			val1 = (Integer) ParameterParser.getValue(opr1);
-		}
-		if (opr2.matches("^\\d+$")) {
-			val2 = Integer.parseInt(opr2);
-		} else {
-			val2 = (Integer) ParameterParser.getValue(opr2);
-		}
+		Integer val1 = (Integer) ParameterParser.getParsedValue(opr1);
+		Integer val2 = (Integer) ParameterParser.getParsedValue(opr2);
 
 		switch (opName) {
 		case "ADD":
@@ -368,22 +407,15 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 		Map<String, Object> valMap = entry.symbolTable.get(scope);
 		String[] paramArr = ParameterParser.getParams(params);
 		String varName = paramArr[0].trim();
-		Boolean val1;
+
 		Boolean val2 = null;
 		String opr1 = paramArr[1].trim();
-		if (opr1.matches("T|F")) {
-			val1 = Boolean.parseBoolean(opr1);
-		} else {
-			val1 = (Boolean) ParameterParser.getValue(opr1);
-		}
+
+		Boolean val1 = (Boolean) ParameterParser.getParsedValue(opr1);
 		String opr2;
 		if (paramArr.length > 2) {
 			opr2 = paramArr[2].trim();
-			if (opr2.matches("T|F")) {
-				val1 = Boolean.parseBoolean(opr2);
-			} else {
-				val2 = (Boolean) ParameterParser.getValue(opr2);
-			}
+			val2 = (Boolean) ParameterParser.getParsedValue(opr2);
 		}
 
 		switch (opName) {
