@@ -70,11 +70,6 @@ public class Runtime {
 	public static int execLine = 1;
 
 	/**
-	 * Indicates that the execution has entered a loop.
-	 */
-	public static boolean inLoop = false;
-
-	/**
 	 * The execution entry point of the program where the main method is
 	 * executed.
 	 * 

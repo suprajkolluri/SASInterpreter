@@ -248,13 +248,9 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 	BSTART {
 		@Override
 		public boolean execute(String params) throws RuntimeException {
-			if (!Runtime.inLoop) {
-				Entry entry = Runtime.entryStack.peek();
-				int scope = entry.symbolTable.size();
-				entry.symbolTable.put(scope + 1, new HashMap<String, Object>());
-			} else {
-				Runtime.inLoop = false;
-			}
+			Entry entry = Runtime.entryStack.peek();
+			int scope = entry.symbolTable.size();
+			entry.symbolTable.put(scope + 1, new HashMap<String, Object>());
 			return true;
 		}
 	},
@@ -411,7 +407,6 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 	LOOP {
 		@Override
 		public boolean execute(String params) throws RuntimeException {
-			Runtime.inLoop = true;
 			return true;
 		}
 	};
