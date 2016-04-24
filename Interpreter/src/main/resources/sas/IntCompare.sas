@@ -1,8 +1,10 @@
 PSTART
 MSTART
+DCLRI a
 STORE a,5
+DCLRI b
 STORE b,6
-STORE c,F
+DCLRB c
 LT c,a,b
 PRINT a
 PRINT " is less than "

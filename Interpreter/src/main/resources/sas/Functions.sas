@@ -1,8 +1,11 @@
 PSTART
 MSTART
+DCLRI x
 STORE x,3
+DCLRI y
 STORE y,2
 GOTO add,x,y
+DCLRI z
 STORE z,POP()
 PRINT "The sum is "
 PRINTLN z
@@ -13,10 +16,12 @@ GOTO returnfunc
 PRINTLN POP()
 MEND
 FUNC add,a,b
+DCLRI c
 ADD c,a,b
 RETURN c
 FEND
 FUNC sub,a,b
+DCLRI c
 SUB c,a,b
 PRINT "The sub is "
 PRINTLN c

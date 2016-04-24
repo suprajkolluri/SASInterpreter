@@ -26,7 +26,7 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 			if (params.matches("\".*\"")) {
 				System.out.print(params.substring(1, params.length() - 1));
 			} else {
-				System.out.print(ParameterParser.getParsedValue(params));
+				System.out.print(Common.getParsedValue(params));
 			}
 			return true;
 		}
@@ -41,8 +41,53 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 			if (params.matches("\".*\"")) {
 				System.out.println(params.substring(1, params.length() - 1));
 			} else {
-				System.out.println(ParameterParser.getParsedValue(params));
+				System.out.println(Common.getParsedValue(params));
 			}
+			return true;
+		}
+	},
+	/**
+	 * Declaration block for integers, Zero is assigned to the variable by
+	 * default.
+	 */
+	DCLRI {
+		@Override
+		public boolean execute(String params) throws RuntimeException {
+			String[] paramArr = Common.getParams(params);
+			String varName = paramArr[0].trim();
+			Entry entry = Runtime.entryStack.peek();
+			int scope = entry.symbolTable.size();
+			entry.symbolTable.get(scope).put(varName, 0);
+			return true;
+		}
+	},
+	/**
+	 * Declaration block for Booleans, False is assigned to the variable by
+	 * default.
+	 */
+	DCLRB {
+		@Override
+		public boolean execute(String params) throws RuntimeException {
+			String[] paramArr = Common.getParams(params);
+			String varName = paramArr[0].trim();
+			Entry entry = Runtime.entryStack.peek();
+			int scope = entry.symbolTable.size();
+			entry.symbolTable.get(scope).put(varName, false);
+			return true;
+		}
+	},
+	/**
+	 * Declaration block for Strings, Empty string is assigned to the variable
+	 * by default.
+	 */
+	DCLRS {
+		@Override
+		public boolean execute(String params) throws RuntimeException {
+			String[] paramArr = Common.getParams(params);
+			String varName = paramArr[0].trim();
+			Entry entry = Runtime.entryStack.peek();
+			int scope = entry.symbolTable.size();
+			entry.symbolTable.get(scope).put(varName, "");
 			return true;
 		}
 	},
@@ -52,15 +97,13 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 	STORE {
 		@Override
 		public boolean execute(String params) throws RuntimeException {
-			String[] paramArr = ParameterParser.getParams(params);
+			String[] paramArr = Common.getParams(params);
 			String varName = paramArr[0].trim();
 			String value = paramArr[1].trim();
 
-			Object val = ParameterParser.getParsedValue(value);
+			Object val = Common.getParsedValue(value);
 
-			Entry entry = Runtime.entryStack.peek();
-			int scope = entry.symbolTable.size();
-			entry.symbolTable.get(scope).put(varName, val);
+			Common.storeValue(varName, val);
 			return true;
 		}
 	},
@@ -158,12 +201,12 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 			Entry entry = Runtime.entryStack.peek();
 			int scope = entry.symbolTable.size();
 			Map<String, Object> valMap = entry.symbolTable.get(scope);
-			String[] paramArr = ParameterParser.getParams(params);
+			String[] paramArr = Common.getParams(params);
 			String varName = paramArr[0].trim();
 			String opr1 = paramArr[1].trim();
 			String opr2 = paramArr[2].trim();
-			Object val1 = ParameterParser.getParsedValue(opr1);
-			Object val2 = ParameterParser.getParsedValue(opr2);
+			Object val1 = Common.getParsedValue(opr1);
+			Object val2 = Common.getParsedValue(opr2);
 			valMap.put(varName, val1 == val2);
 			return true;
 		}
@@ -205,9 +248,13 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 	BSTART {
 		@Override
 		public boolean execute(String params) throws RuntimeException {
-			Entry entry = Runtime.entryStack.peek();
-			int scope = entry.symbolTable.size();
-			entry.symbolTable.put(scope + 1, new HashMap<String, Object>());
+			if (!Runtime.inLoop) {
+				Entry entry = Runtime.entryStack.peek();
+				int scope = entry.symbolTable.size();
+				entry.symbolTable.put(scope + 1, new HashMap<String, Object>());
+			} else {
+				Runtime.inLoop = false;
+			}
 			return true;
 		}
 	},
@@ -237,31 +284,37 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 	GOTO {
 		@Override
 		public boolean execute(String params) throws RuntimeException {
-			String[] paramArr = ParameterParser.getParams(params);
-			String funcName = paramArr[0];
-			Integer lineNo = Runtime.methodIndexMap.get(funcName);
+			String[] paramArr = Common.getParams(params);
+			if (paramArr.length == 1 && paramArr[0].matches("^\\d+$")) {
+				Integer lineNo = Integer.parseInt(paramArr[0]);
+				Runtime.runCode(lineNo);
+				return false;
+			} else {
+				String funcName = paramArr[0];
+				Integer lineNo = Runtime.methodIndexMap.get(funcName);
 
-			if (lineNo == null) {
-				throw new RuntimeException(funcName + " Function definition not found");
-			}
+				if (lineNo == null) {
+					throw new RuntimeException(funcName + " Function definition not found");
+				}
 
-			Map<String, Object> methodValMap = new HashMap<String, Object>();
-			if (paramArr.length > 1) {
-				String instruction = Runtime.instructionMap.get(lineNo);
-				String[] methodParams = ParameterParser.getParams(instruction);
-				if (paramArr.length != methodParams.length) {
-					throw new RuntimeException(funcName + " Function parameters mismatch Exception");
+				Map<String, Object> methodValMap = new HashMap<String, Object>();
+				if (paramArr.length > 1) {
+					String instruction = Runtime.instructionMap.get(lineNo);
+					String[] methodParams = Common.getParams(instruction);
+					if (paramArr.length != methodParams.length) {
+						throw new RuntimeException(funcName + " Function parameters mismatch Exception");
+					}
+					for (int i = 1; i < paramArr.length; i++) {
+						Object val = Common.getParsedValue(paramArr[i]);
+						methodValMap.put(methodParams[i], val);
+					}
 				}
-				for (int i = 1; i < paramArr.length; i++) {
-					Object val = ParameterParser.getParsedValue(paramArr[i]);
-					methodValMap.put(methodParams[i], val);
-				}
+				Entry entry = new Entry();
+				entry.symbolTable.put(1, methodValMap);
+				Runtime.entryStack.push(entry);
+				Runtime.runCode(lineNo + 1);
+				return true;
 			}
-			Entry entry = new Entry();
-			entry.symbolTable.put(1, methodValMap);
-			Runtime.entryStack.push(entry);
-			Runtime.runCode(lineNo + 1);
-			return true;
 		}
 	},
 
@@ -293,7 +346,7 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 	RETURN {
 		@Override
 		public boolean execute(String params) throws RuntimeException {
-			Object returnVal = ParameterParser.getParsedValue(params);
+			Object returnVal = Common.getParsedValue(params);
 			Runtime.returnValStack.push(returnVal);
 			Runtime.entryStack.pop();
 			if (Runtime.inIf) {
@@ -329,18 +382,37 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 	CHECKT {
 		@Override
 		public boolean execute(String params) throws RuntimeException {
-			String[] paramArr = ParameterParser.getParams(params);
+			String[] paramArr = Common.getParams(params);
 			String varName = paramArr[0].trim();
-			boolean value = (boolean) ParameterParser.getParsedValue(varName);
+			boolean value = (boolean) Common.getParsedValue(varName);
 			Integer opr1 = Integer.parseInt(paramArr[1].trim());
-			Integer opr2 = Integer.parseInt(paramArr[2].trim());
+
+			Integer opr2 = null;
+			if (paramArr.length > 2) {
+				opr2 = Integer.parseInt(paramArr[2].trim());
+			} else {
+				opr2 = opr1;
+			}
+
 			if (value) {
-				Runtime.ifTrueLine = opr1;
+				if (Runtime.inIf) {
+					Runtime.ifTrueLine = opr1;
+				}
 				Runtime.runCode(Runtime.execLine + 1);
 			} else {
 				Runtime.runCode(opr2);
 			}
 			return false;
+		}
+	},
+	/**
+	 * Indicates a loop is being executed.
+	 */
+	LOOP {
+		@Override
+		public boolean execute(String params) throws RuntimeException {
+			Runtime.inLoop = true;
+			return true;
 		}
 	};
 
@@ -354,40 +426,37 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 	 *             When something goes wrong during the execution.
 	 */
 	private static void doMathOp(String opName, String params) throws RuntimeException {
-		Entry entry = Runtime.entryStack.peek();
-		int scope = entry.symbolTable.size();
-		Map<String, Object> valMap = entry.symbolTable.get(scope);
-		String[] paramArr = ParameterParser.getParams(params);
+		String[] paramArr = Common.getParams(params);
 		String varName = paramArr[0].trim();
 		String opr1 = paramArr[1].trim();
 		String opr2 = paramArr[2].trim();
-		Integer val1 = (Integer) ParameterParser.getParsedValue(opr1);
-		Integer val2 = (Integer) ParameterParser.getParsedValue(opr2);
+		Integer val1 = (Integer) Common.getParsedValue(opr1);
+		Integer val2 = (Integer) Common.getParsedValue(opr2);
 
 		switch (opName) {
 		case "ADD":
-			valMap.put(varName, val1 + val2);
+			Common.storeValue(varName, val1 + val2);
 			break;
 		case "SUB":
-			valMap.put(varName, val1 - val2);
+			Common.storeValue(varName, val1 - val2);
 			break;
 		case "MUL":
-			valMap.put(varName, val1 * val2);
+			Common.storeValue(varName, val1 * val2);
 			break;
 		case "DIV":
-			valMap.put(varName, val1 / val2);
+			Common.storeValue(varName, val1 / val2);
 			break;
 		case "LT":
-			valMap.put(varName, val1 < val2);
+			Common.storeValue(varName, val1 < val2);
 			break;
 		case "LTE":
-			valMap.put(varName, val1 <= val2);
+			Common.storeValue(varName, val1 <= val2);
 			break;
 		case "GT":
-			valMap.put(varName, val1 > val2);
+			Common.storeValue(varName, val1 > val2);
 			break;
 		case "GTE":
-			valMap.put(varName, val1 >= val2);
+			Common.storeValue(varName, val1 >= val2);
 			break;
 		}
 	}
@@ -402,31 +471,28 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 	 *             When something goes wrong during the execution.
 	 */
 	private static void doBoolOps(String opName, String params) throws RuntimeException {
-		Entry entry = Runtime.entryStack.peek();
-		int scope = entry.symbolTable.size();
-		Map<String, Object> valMap = entry.symbolTable.get(scope);
-		String[] paramArr = ParameterParser.getParams(params);
+		String[] paramArr = Common.getParams(params);
 		String varName = paramArr[0].trim();
 
 		Boolean val2 = null;
 		String opr1 = paramArr[1].trim();
 
-		Boolean val1 = (Boolean) ParameterParser.getParsedValue(opr1);
+		Boolean val1 = (Boolean) Common.getParsedValue(opr1);
 		String opr2;
 		if (paramArr.length > 2) {
 			opr2 = paramArr[2].trim();
-			val2 = (Boolean) ParameterParser.getParsedValue(opr2);
+			val2 = (Boolean) Common.getParsedValue(opr2);
 		}
 
 		switch (opName) {
 		case "AND":
-			valMap.put(varName, val1 && val2);
+			Common.storeValue(varName, val1 && val2);
 			break;
 		case "OR":
-			valMap.put(varName, val1 || val2);
+			Common.storeValue(varName, val1 || val2);
 			break;
 		case "NOT":
-			valMap.put(varName, !val1);
+			Common.storeValue(varName, !val1);
 			break;
 		}
 	}
