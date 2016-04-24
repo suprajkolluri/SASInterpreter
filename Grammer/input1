@@ -1,8 +1,0 @@
-[
-INTEGER a
-a=3
-INTEGER b
-b=4
-INTEGER c
-c=a+b+5
-]

@@ -1,4 +1,5 @@
 // Generated from Demo.g4 by ANTLR 4.5.3
+package asu.parser;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -115,12 +116,9 @@ public class DemoParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_program; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).enterProgram(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).exitProgram(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof DemoVisitor ) return ((DemoVisitor<? extends T>)visitor).visitProgram(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -236,12 +234,9 @@ public class DemoParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_block; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).enterBlock(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).exitBlock(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof DemoVisitor ) return ((DemoVisitor<? extends T>)visitor).visitBlock(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -434,12 +429,9 @@ public class DemoParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_funcblock; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).enterFuncblock(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).exitFuncblock(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof DemoVisitor ) return ((DemoVisitor<? extends T>)visitor).visitFuncblock(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -483,12 +475,9 @@ public class DemoParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_ifblock; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).enterIfblock(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).exitIfblock(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof DemoVisitor ) return ((DemoVisitor<? extends T>)visitor).visitIfblock(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -539,12 +528,9 @@ public class DemoParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_exp; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).enterExp(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).exitExp(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof DemoVisitor ) return ((DemoVisitor<? extends T>)visitor).visitExp(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -612,12 +598,9 @@ public class DemoParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_iexp; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).enterIexp(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).exitIexp(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof DemoVisitor ) return ((DemoVisitor<? extends T>)visitor).visitIexp(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -775,12 +758,9 @@ public class DemoParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_conditional; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).enterConditional(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).exitConditional(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof DemoVisitor ) return ((DemoVisitor<? extends T>)visitor).visitConditional(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1036,12 +1016,9 @@ public class DemoParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_bexp; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).enterBexp(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).exitBexp(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof DemoVisitor ) return ((DemoVisitor<? extends T>)visitor).visitBexp(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1209,12 +1186,9 @@ public class DemoParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_equality; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).enterEquality(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).exitEquality(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof DemoVisitor ) return ((DemoVisitor<? extends T>)visitor).visitEquality(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1401,12 +1375,9 @@ public class DemoParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_comparison; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).enterComparison(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).exitComparison(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof DemoVisitor ) return ((DemoVisitor<? extends T>)visitor).visitComparison(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1461,12 +1432,9 @@ public class DemoParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_declare; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).enterDeclare(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).exitDeclare(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof DemoVisitor ) return ((DemoVisitor<? extends T>)visitor).visitDeclare(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1511,12 +1479,9 @@ public class DemoParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_assign; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).enterAssign(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).exitAssign(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof DemoVisitor ) return ((DemoVisitor<? extends T>)visitor).visitAssign(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1602,12 +1567,9 @@ public class DemoParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_funcDeclare; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).enterFuncDeclare(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).exitFuncDeclare(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof DemoVisitor ) return ((DemoVisitor<? extends T>)visitor).visitFuncDeclare(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -1698,12 +1660,9 @@ public class DemoParser extends Parser {
 		}
 		@Override public int getRuleIndex() { return RULE_returnexp; }
 		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).enterReturnexp(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof DemoListener ) ((DemoListener)listener).exitReturnexp(this);
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof DemoVisitor ) return ((DemoVisitor<? extends T>)visitor).visitReturnexp(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 

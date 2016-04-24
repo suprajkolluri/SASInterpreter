@@ -1,4 +1,4 @@
-// define a grammar called dello
+// define a grammar called demo
 grammar Demo;
 program:PSTART NEWLINE (exp NEWLINE)* (block NEWLINE)* (exp NEWLINE)* PEND;
 
@@ -22,9 +22,9 @@ ifblock:IF WS '(' conditional ')';
 	  	  
 NEWLINE:'\n';         	
 			
-INT: [0-9]+;
+int: [0-9]+;
 				 
-BOOL:'T'|'F' ;
+bool:'T'|'F' ;
 
 BSTART:'{';
 
@@ -36,10 +36,10 @@ exp:  iexp
 	 |assign;
 	 
 iexp: '(' iexp ')' 
-      |iexp MULDIV INT  	 
+      |iexp MULDIV int  	 
       |iexp MULDIV '('iexp')'
 	  |iexp ADDSUB iexp	  
-	  |INT 
+	  |int 
 	  |iexp MULDIV IDENTIFIER
 	  |IDENTIFIER;
 
@@ -105,7 +105,7 @@ declare:DATATYPE WS IDENTIFIER;
 
 WS:(' ')+;
 
-assign: IDENTIFIER ASSIGNMENT INT
+assign: IDENTIFIER ASSIGNMENT int
        |IDENTIFIER ASSIGNMENT BOOL
 	   |IDENTIFIER ASSIGNMENT iexp
 	   |IDENTIFIER ASSIGNMENT conditional;
