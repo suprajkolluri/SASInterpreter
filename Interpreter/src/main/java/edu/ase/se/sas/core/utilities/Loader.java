@@ -88,6 +88,7 @@ public class Loader {
 					break;
 				default:
 					String opCode = line.split(" +")[0];
+					String variable;
 					switch (opCode) {
 					case "STORE":
 						if (!funcVar) {
@@ -96,11 +97,29 @@ public class Loader {
 							String value = param.split(",")[1].trim();
 							Object val;
 							try {
-								val = ParameterParser.getParsedValue(value);
+								val = Common.getParsedValue(value);
 							} catch (RuntimeException e) {
 								throw new FileReadException("Unable to read the value " + value, e);
 							}
 							Runtime.globalVarMap.put(var, val);
+						}
+						break;
+					case "DCLRI":
+						if (!funcVar) {
+							variable = line.split(" +")[1];
+							Runtime.globalVarMap.put(variable, 0);
+						}
+						break;
+					case "DCLRB":
+						if (!funcVar) {
+							variable = line.split(" +")[1];
+							Runtime.globalVarMap.put(variable, false);
+						}
+						break;
+					case "DCLRS":
+						if (!funcVar) {
+							variable = line.split(" +")[1];
+							Runtime.globalVarMap.put(variable, "");
 						}
 						break;
 					case "FUNC":

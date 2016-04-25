@@ -55,6 +55,21 @@ public class Runtime {
 	public static final Map<Integer, String> instructionMap = new HashMap<Integer, String>();
 
 	/**
+	 * Indicates if the IF block is executing.
+	 */
+	public static boolean inIf = false;
+
+	/**
+	 * Stores the line number to jump to if the IF condition is true.
+	 */
+	public static int ifTrueLine = 0;
+
+	/**
+	 * Contains the line of the code that is being executed.
+	 */
+	public static int execLine = 1;
+
+	/**
 	 * The execution entry point of the program where the main method is
 	 * executed.
 	 * 
@@ -67,7 +82,7 @@ public class Runtime {
 		Entry entry = new Entry();
 		entry.symbolTable.put(1, new HashMap<String, Object>());
 		entryStack.push(entry);
-		runMethod(loader.mStartNo + 1);
+		runCode(loader.mStartNo + 1);
 	}
 
 	/**
@@ -78,10 +93,11 @@ public class Runtime {
 	 * @throws RuntimeException
 	 *             When something goes wrong during the code execution.
 	 */
-	public static void runMethod(int startLine) throws RuntimeException {
+	public static void runCode(int startLine) throws RuntimeException {
 		boolean continueExec = true;
 		while (continueExec) {
-			String instruction = instructionMap.get(startLine++);
+			String instruction = instructionMap.get(startLine);
+			execLine = startLine;
 			String[] instrArr = instruction.split(" +", 2);
 			String opCode = instrArr[0];
 			String params = "";
@@ -94,6 +110,7 @@ public class Runtime {
 			} catch (IllegalArgumentException e) {
 				throw new RuntimeException("Illegal Op code used: " + opCode + " " + e.getMessage());
 			}
+			startLine++;
 		}
 	}
 }

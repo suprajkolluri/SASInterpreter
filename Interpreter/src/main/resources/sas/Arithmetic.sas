@@ -1,8 +1,10 @@
 PSTART
+DCLRI c
 MSTART
+DCLRI a
 STORE a,5
+DCLRI b
 STORE b,6
-STORE c,0
 ADD c,a,b
 PRINT "The sum is "
 PRINTLN c

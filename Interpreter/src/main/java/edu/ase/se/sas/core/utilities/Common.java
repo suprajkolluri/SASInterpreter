@@ -8,10 +8,10 @@ import edu.ase.se.sas.exceptions.RuntimeException;
 
 /**
  * 
- * The ParameterParser contains methods that perform common functions.
+ * The Common class contains methods that perform common functions.
  *
  */
-public class ParameterParser {
+public class Common {
 
 	/**
 	 * Returns the parameters in a String array.
@@ -40,7 +40,7 @@ public class ParameterParser {
 		if (value.matches("^\\d+$")) {
 			val = Integer.parseInt(value);
 		} else if (value.matches("T|F")) {
-			val = (value == "T") ? true : false;
+			val = (value.equals("T")) ? true : false;
 		} else if (value.matches("\".*\"")) {
 			val = value.substring(1, value.length() - 1);
 		} else {
@@ -80,6 +80,41 @@ public class ParameterParser {
 		}
 		return returnVal;
 
+	}
+
+	/**
+	 * Searches for the variable and stores its value in that scope.
+	 * 
+	 * @param var
+	 *            The name of the variable.
+	 * @param val
+	 *            The value to be stored in the variable.
+	 * @throws RuntimeException
+	 *             When something goes wrong during the program execution.
+	 */
+	public static void storeValue(String var, Object val) throws RuntimeException {
+		Entry entry = Runtime.entryStack.peek();
+		int scope = entry.symbolTable.size();
+		if (var.startsWith("$")) {
+			Map<String, Object> map = entry.symbolTable.get(scope);
+			map.put(var, val);
+		} else {
+			while (scope >= 1) {
+				Map<String, Object> map = entry.symbolTable.get(scope);
+				if (map.containsKey(var)) {
+					map.put(var, val);
+					break;
+				} else {
+					scope--;
+				}
+			}
+			if (scope == 0) {
+				if (!Runtime.globalVarMap.containsKey(var)) {
+					throw new RuntimeException(var + ": Variable not declared");
+				}
+				Runtime.globalVarMap.put(var, val);
+			}
+		}
 	}
 
 }
