@@ -23,7 +23,12 @@ public class Main {
         DemoParser parser = new DemoParser(tokenStream);
 
         ParseTree tree = parser.program();
-        String output = new MyVisitor().visit(tree);
+        MyVisitor v = new MyVisitor();
+        v.visit(tree);
+        String output="";
+        for(String t : v.statements){
+            output += t + "\n";
+        }
         write(output);
     }
 

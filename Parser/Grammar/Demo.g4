@@ -1,16 +1,16 @@
-// define a grammar called demo
+// define a grammar called dello
 grammar Demo;
 program:PSTART NEWLINE (exp NEWLINE)* (block NEWLINE)* (exp NEWLINE)* PEND;
 
 
 block:funcDeclare
       |IF '('conditional')' block
-      |IF '('conditional')' block NEWLINE ELSE block  
+      |IF '('conditional')' block NEWLINE ELSE (WS)* block  
 	  |WHILE '('conditional')' block
       |BSTART NEWLINE (exp NEWLINE)* (block NEWLINE)+ (exp NEWLINE)* BEND
       |BSTART NEWLINE (exp NEWLINE)* BEND ;
 
-funcblock: BSTART NEWLINE returnexp NEWLINE BEND;
+funcblock: BSTART NEWLINE (exp NEWLINE)* (returnexp NEWLINE)?  BEND;
 	  
 IF:'IF';
 
@@ -20,11 +20,11 @@ ELSE:'ELSE';
 
 ifblock:IF WS '(' conditional ')';
 	  	  
-NEWLINE:'\n';         	
+NEWLINE:'\r''\n';         	
 			
-int: [0-9]+;
+INT: [0-9]+;
 				 
-bool:'T'|'F' ;
+BOOL:'T'|'F' ;
 
 BSTART:'{';
 
@@ -36,10 +36,10 @@ exp:  iexp
 	 |assign;
 	 
 iexp: '(' iexp ')' 
-      |iexp MULDIV int  	 
+      |iexp MULDIV INT  	 
       |iexp MULDIV '('iexp')'
 	  |iexp ADDSUB iexp	  
-	  |int 
+	  |INT 
 	  |iexp MULDIV IDENTIFIER
 	  |IDENTIFIER;
 
@@ -97,7 +97,7 @@ comparison:'(' comparison ')'
 
 COMPARE:('<'|'>'|'<='|'>=');
  
-DATATYPE:('INTEGER'|'BOOLEAN');
+DATATYPE:('INTEGER'|'BOOLEAN'|'VOID');
 
 IDENTIFIER:[A-Za-z]+;
 
@@ -105,7 +105,7 @@ declare:DATATYPE WS IDENTIFIER;
 
 WS:(' ')+;
 
-assign: IDENTIFIER ASSIGNMENT int
+assign: IDENTIFIER ASSIGNMENT INT
        |IDENTIFIER ASSIGNMENT BOOL
 	   |IDENTIFIER ASSIGNMENT iexp
 	   |IDENTIFIER ASSIGNMENT conditional;
@@ -121,8 +121,7 @@ FUNCTIONNAME:IDENTIFIER;
 funcDeclare:DATATYPE WS IDENTIFIER '('')' funcblock
            |DATATYPE WS IDENTIFIER '(' declare (','declare)* ')' funcblock;
 		   
-RETURN:'Return';		   
+YIELD:'yield';		   
 
-returnexp:  RETURN 
-          | RETURN WS iexp
-          | RETURN WS conditional;  		  
+returnexp:  'RETURN' WS iexp
+          | 'RETURN' WS conditional;  		  
