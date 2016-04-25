@@ -20,7 +20,7 @@ ELSE:'ELSE';
 
 ifblock:IF WS '(' conditional ')';
 	  	  
-NEWLINE:'\r''\n';         	
+NEWLINE:'\n';         	
 			
 INT: [0-9]+;
 				 
@@ -47,6 +47,8 @@ ADDSUB: ('+'|'-');
 MULDIV: ('*'|'/');
 
 conditional:'(' conditional ')'
+		   |NOT WS conditional
+		   |NOT conditional
            |conditional EQUAL conditional
            |conditional WS AND WS conditional 		   
            |conditional WS OR WS conditional
@@ -69,11 +71,9 @@ OR: 'OR';
 NOT:'NOT';
 			  
 bexp:'(' bexp ')'
-     |NOT BOOL
-	 |NOT '('bexp')'
-     |bexp AND BOOL
-	 |bexp AND '('bexp')'
-	 |bexp OR bexp	 
+     |bexp WS AND WS BOOL
+	 |bexp WS AND WS '('bexp')'
+	 |bexp WS OR WS bexp	 
 	 |BOOL
 	 |IDENTIFIER;
 
@@ -106,7 +106,6 @@ declare:DATATYPE WS IDENTIFIER;
 WS:(' ')+;
 
 assign: IDENTIFIER ASSIGNMENT INT
-       |IDENTIFIER ASSIGNMENT BOOL
 	   |IDENTIFIER ASSIGNMENT iexp
 	   |IDENTIFIER ASSIGNMENT conditional;
 	   

@@ -1,4 +1,0 @@
-DCLRI i
-ADD $0 1 2
-ADD $1  $0
-STORE i,$1
