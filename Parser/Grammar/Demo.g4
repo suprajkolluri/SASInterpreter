@@ -2,9 +2,8 @@
 grammar Demo;
 program:PSTART NEWLINE global main global PEND; 
 	  
-global:((declare NEWLINE)+|(assign NEWLINE)*(funcDeclare)*)+
-       |((declare NEWLINE)*(assign NEWLINE)*(funcDeclare)+)+
-       |	   
+global:((declare NEWLINE)+(assign NEWLINE)*(funcDeclare)*)+
+       |((declare NEWLINE)*(assign NEWLINE)*(funcDeclare)+)+ 
        |;	   
 	  
 main:MSTART block MEND NEWLINE
