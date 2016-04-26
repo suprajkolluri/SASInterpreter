@@ -10,10 +10,12 @@ main:MSTART block MEND NEWLINE
     |MSTART NEWLINE (exp NEWLINE)+ block (exp NEWLINE)* MEND NEWLINE
 	|MSTART NEWLINE (exp NEWLINE)* block (exp NEWLINE)+ MEND NEWLINE;
 	  
+elseblock:ELSE (WS)*block;	  
+	  
 block:(exp NEWLINE)*
 			|BSTART NEWLINE block BEND NEWLINE
 			|IF condition block
-            |IF condition block ELSE (WS)* block  
+            |IF condition block elseblock 
 	        |WHILE '('conditional')' block;			
              
 condition:'('conditional')';			 
