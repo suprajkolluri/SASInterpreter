@@ -1,16 +1,24 @@
 // define a grammar called dello
 grammar Demo;
-program:PSTART NEWLINE (exp NEWLINE)* (block NEWLINE)* (exp NEWLINE)* PEND;
-
-
-block:funcDeclare
-      |IF '('conditional')' block
-      |IF '('conditional')' block NEWLINE ELSE (WS)* block  
-	  |WHILE '('conditional')' block
-      |BSTART NEWLINE (exp NEWLINE)* (block NEWLINE)+ (exp NEWLINE)* BEND
-      |BSTART NEWLINE (exp NEWLINE)* BEND ;
-
-funcblock: BSTART NEWLINE (exp NEWLINE)* (returnexp NEWLINE)?  BEND;
+program:PSTART NEWLINE global main global PEND; 
+	  
+global:((declare NEWLINE)+(assign NEWLINE)*(funcDeclare)*)+
+       |((declare NEWLINE)*(assign NEWLINE)*(funcDeclare)+)+ 
+       |;	   
+	  
+main:MSTART block MEND NEWLINE
+    |MSTART NEWLINE (exp NEWLINE)+ block (exp NEWLINE)* MEND NEWLINE
+	|MSTART NEWLINE (exp NEWLINE)* block (exp NEWLINE)+ MEND NEWLINE;
+	  
+block:(exp NEWLINE)*
+			|BSTART NEWLINE block BEND NEWLINE
+			|IF condition block
+            |IF condition block ELSE (WS)* block  
+	        |WHILE '('conditional')' block;			
+             
+condition:'('conditional')';			 
+			 
+funcblock: BSTART NEWLINE block (returnexp NEWLINE)? BEND NEWLINE;
 	  
 IF:'IF';
 
@@ -33,7 +41,8 @@ BEND:'}';
 exp:  iexp
      |conditional
 	 |declare
-	 |assign;
+	 |assign
+	 |funcCall;
 	 
 iexp: '(' iexp ')' 
       |iexp MULDIV INT  	 
@@ -71,9 +80,9 @@ OR: 'OR';
 NOT:'NOT';
 			  
 bexp:'(' bexp ')'
-     |bexp WS AND WS BOOL
-	 |bexp WS AND WS '('bexp')'
-	 |bexp WS OR WS bexp	 
+     |bexp AND BOOL
+	 |bexp AND '('bexp')'
+	 |bexp OR bexp	 
 	 |BOOL
 	 |IDENTIFIER;
 
@@ -107,7 +116,8 @@ WS:(' ')+;
 
 assign: IDENTIFIER ASSIGNMENT INT
 	   |IDENTIFIER ASSIGNMENT iexp
-	   |IDENTIFIER ASSIGNMENT conditional;
+	   |IDENTIFIER ASSIGNMENT conditional
+	   |IDENTIFIER ASSIGNMENT funcCall;
 	   
 ASSIGNMENT:'='; 
 
@@ -115,12 +125,15 @@ PSTART:'[';
 
 PEND:']';
 
-FUNCTIONNAME:IDENTIFIER;
+MSTART:'--';
 
-funcDeclare:DATATYPE WS IDENTIFIER '('')' funcblock
-           |DATATYPE WS IDENTIFIER '(' declare (','declare)* ')' funcblock;
+MEND:'!!';
+
+funcDeclare:'FUNCTION' WS IDENTIFIER '('')' funcblock
+           |'FUNCTION' WS IDENTIFIER '(' IDENTIFIER (','IDENTIFIER)* ')' funcblock;
 		   
-YIELD:'yield';		   
-
 returnexp:  'RETURN' WS iexp
-          | 'RETURN' WS conditional;  		  
+          | 'RETURN' WS conditional;  
+
+funcCall:IDENTIFIER'('')'
+        |IDENTIFIER'('(INT|BOOL|IDENTIFIER)(','(INT|BOOL|IDENTIFIER))*')';  		  
