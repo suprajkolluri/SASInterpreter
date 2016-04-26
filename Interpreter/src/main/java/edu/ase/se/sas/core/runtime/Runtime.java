@@ -55,19 +55,14 @@ public class Runtime {
 	public static final Map<Integer, String> instructionMap = new HashMap<Integer, String>();
 
 	/**
-	 * Indicates if the IF block is executing.
-	 */
-	public static boolean inIf = false;
-
-	/**
-	 * Stores the line number to jump to if the IF condition is true.
-	 */
-	public static int ifTrueLine = 0;
-
-	/**
 	 * Contains the line of the code that is being executed.
 	 */
 	public static int execLine = 1;
+
+	/**
+	 * Maintains the list of integers to jump to after executing the if block
+	 */
+	public static Stack<Integer> ifStack = new Stack<Integer>();
 
 	/**
 	 * The execution entry point of the program where the main method is

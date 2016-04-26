@@ -3,6 +3,7 @@ MSTART
 GOTO move,4,1,2,3
 MEND
 FUNC move,n,from,intermediate,to
+BSTART
 IF
 GT $1,n,0
 CHECKT $1,18,18
@@ -14,6 +15,7 @@ PRINT from
 PRINT " to "
 PRINTLN to
 GOTO move,$2,intermediate,from,to
+BEND
 BEND
 FEND
 PEND
