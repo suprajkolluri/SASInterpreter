@@ -1,6 +1,7 @@
 package edu.ase.se.sas.core.utilities;
 
 import java.util.Map;
+import java.util.Stack;
 
 import edu.ase.se.sas.core.components.Entry;
 import edu.ase.se.sas.core.runtime.Runtime;
@@ -59,6 +60,7 @@ public class Common {
 	 * @throws RuntimeException
 	 *             When something goes wrong during the program execution.
 	 */
+	@SuppressWarnings("rawtypes")
 	public static Object getValue(String var) throws RuntimeException {
 		Object returnVal = null;
 		Entry entry = Runtime.entryStack.peek();
@@ -67,6 +69,10 @@ public class Common {
 			Map<String, Object> map = entry.symbolTable.get(scope);
 			if (map.containsKey(var)) {
 				returnVal = map.get(var);
+				if (returnVal instanceof Stack) {
+					Stack stack = (Stack) returnVal;
+					returnVal = stack.pop();
+				}
 				break;
 			} else {
 				scope--;
@@ -76,6 +82,9 @@ public class Common {
 			returnVal = Runtime.globalVarMap.get(var);
 			if (returnVal == null) {
 				throw new RuntimeException(var + ": Variable not declared");
+			} else if (returnVal instanceof Stack) {
+				Stack stack = (Stack) returnVal;
+				returnVal = stack.pop();
 			}
 		}
 		return returnVal;
@@ -102,7 +111,12 @@ public class Common {
 			while (scope >= 1) {
 				Map<String, Object> map = entry.symbolTable.get(scope);
 				if (map.containsKey(var)) {
-					map.put(var, val);
+					Object obj = map.get(var);
+					if (obj instanceof Stack) {
+						pushValToStack(obj, val);
+					} else {
+						map.put(var, val);
+					}
 					break;
 				} else {
 					scope--;
@@ -112,8 +126,62 @@ public class Common {
 				if (!Runtime.globalVarMap.containsKey(var)) {
 					throw new RuntimeException(var + ": Variable not declared");
 				}
-				Runtime.globalVarMap.put(var, val);
+				Object obj = Runtime.globalVarMap.get(var);
+				if (obj instanceof Stack) {
+					pushValToStack(obj, val);
+				} else {
+					Runtime.globalVarMap.put(var, val);
+				}
 			}
+		}
+
+	}
+
+	/**
+	 * Determines the type of the value
+	 * 
+	 * @param val
+	 *            The object value
+	 * @return The type of the object
+	 */
+	private static String getType(Object val) {
+		String type = "";
+		if (val instanceof String) {
+			type = "String";
+		} else if (val instanceof Boolean) {
+			type = "Boolean";
+		} else if (val instanceof Integer) {
+			type = "Integer";
+		}
+		return type;
+
+	}
+
+	/**
+	 * Pushes a value to the object
+	 * 
+	 * @param obj
+	 *            The stack object
+	 * @param val
+	 *            The value to push in the stack
+	 */
+	@SuppressWarnings("unchecked")
+	private static void pushValToStack(Object obj, Object val) {
+
+		String type = getType(val);
+		switch (type) {
+		case "Integer":
+			Stack<Integer> intStack = (Stack<Integer>) obj;
+			intStack.push((Integer) val);
+			break;
+		case "Boolean":
+			Stack<Boolean> boolStack = (Stack<Boolean>) obj;
+			boolStack.push((Boolean) val);
+			break;
+		case "String":
+			Stack<String> strStack = (Stack<String>) obj;
+			strStack.push((String) val);
+			break;
 		}
 	}
 

@@ -2,6 +2,8 @@ package edu.ase.se.sas.core.utilities;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
+import java.util.Stack;
 
 import edu.ase.se.sas.core.components.Entry;
 import edu.ase.se.sas.core.runtime.Runtime;
@@ -92,6 +94,78 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 		}
 	},
 	/**
+	 * Declaration block for Integer Stack, Empty stack is assigned to the
+	 * variable by default.
+	 */
+	DCLRSI {
+		@Override
+		public boolean execute(String params) throws RuntimeException {
+			String[] paramArr = Common.getParams(params);
+			String varName = paramArr[0].trim();
+			Entry entry = Runtime.entryStack.peek();
+			int scope = entry.symbolTable.size();
+			entry.symbolTable.get(scope).put(varName, new Stack<Integer>());
+			return true;
+		}
+	},
+	/**
+	 * Declaration block for Boolean Stack, Empty stack is assigned to the
+	 * variable by default.
+	 */
+	DCLRSB {
+		@Override
+		public boolean execute(String params) throws RuntimeException {
+			String[] paramArr = Common.getParams(params);
+			String varName = paramArr[0].trim();
+			Entry entry = Runtime.entryStack.peek();
+			int scope = entry.symbolTable.size();
+			entry.symbolTable.get(scope).put(varName, new Stack<Boolean>());
+			return true;
+		}
+	},
+	/**
+	 * Declaration block for String Stack, Empty stack is assigned to the
+	 * variable by default.
+	 */
+	DCLRSS {
+		@Override
+		public boolean execute(String params) throws RuntimeException {
+			String[] paramArr = Common.getParams(params);
+			String varName = paramArr[0].trim();
+			Entry entry = Runtime.entryStack.peek();
+			int scope = entry.symbolTable.size();
+			entry.symbolTable.get(scope).put(varName, new Stack<String>());
+			return true;
+		}
+	},
+	PUSH {
+		@Override
+		public boolean execute(String params) throws RuntimeException {
+			String[] paramArr = Common.getParams(params);
+			String varName = paramArr[0].trim();
+			String value = paramArr[1].trim();
+			Object val = Common.getParsedValue(value);
+
+			Common.storeValue(varName, val);
+
+			return true;
+		}
+	},
+	POP {
+		@Override
+		public boolean execute(String params) throws RuntimeException {
+			String[] paramArr = Common.getParams(params);
+			String varName = paramArr[0].trim();
+			String value = paramArr[1].trim();
+
+			Object val = Common.getParsedValue(value);
+
+			Common.storeValue(varName, val);
+			return true;
+		}
+	},
+
+	/**
 	 * Stores a variable in the {@link Entry#symbolTable} for a given scope.
 	 */
 	STORE {
@@ -103,6 +177,25 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 
 			Object val = Common.getParsedValue(value);
 
+			Common.storeValue(varName, val);
+			return true;
+		}
+	},
+	/**
+	 * Reads the value from the console and stores it into a variable
+	 */
+	READ {
+		@SuppressWarnings("resource")
+		@Override
+		public boolean execute(String params) throws RuntimeException {
+			String[] paramArr = Common.getParams(params);
+			String varName = paramArr[0].trim();
+			Scanner in = new Scanner(System.in);
+			String value = in.nextLine();
+			if (!value.matches("^\\d+$") && !value.matches("T|F")) {
+				value = "\"" + value + "\"";
+			}
+			Object val = Common.getParsedValue(value);
 			Common.storeValue(varName, val);
 			return true;
 		}
@@ -419,11 +512,11 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 
 			if (value) {
 				if (paramArr.length > 2) {
-					Runtime.ifStack.push(opr1);
+					Runtime.ifStack.push(opr2);
 				}
 				Runtime.runCode(Runtime.execLine + 1);
 			} else {
-				Runtime.runCode(opr2);
+				Runtime.runCode(opr1);
 			}
 			return false;
 		}
