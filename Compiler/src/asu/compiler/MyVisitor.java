@@ -2,22 +2,27 @@ package asu.compiler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 import asu.parser.DemoBaseVisitor;
 import asu.parser.DemoParser.AssignContext;
 import asu.parser.DemoParser.BexpContext;
 import asu.parser.DemoParser.BlockContext;
 import asu.parser.DemoParser.ComparisonContext;
+import asu.parser.DemoParser.ConditionContext;
 import asu.parser.DemoParser.ConditionalContext;
 import asu.parser.DemoParser.DeclareContext;
+import asu.parser.DemoParser.ElseblockContext;
 import asu.parser.DemoParser.EqualityContext;
 import asu.parser.DemoParser.IexpContext;
+import asu.parser.DemoParser.MainContext;
 import asu.parser.DemoParser.ProgramContext;
 
 public class MyVisitor extends DemoBaseVisitor<String> {
 
     private static int count = -1;
     public static List<String> statements = new ArrayList<>();
+    private static Stack<Integer> indexStack = new Stack<>();
 
     /**
      * @param ctx
@@ -45,7 +50,8 @@ public class MyVisitor extends DemoBaseVisitor<String> {
     }
 
     /**
-     * @param ctx integer expression context
+     * @param ctx
+     *            integer expression context
      * @return returns the op code for integer expressions
      */
     @Override
@@ -102,9 +108,9 @@ public class MyVisitor extends DemoBaseVisitor<String> {
     @Override
     public String visitConditional(ConditionalContext ctx) {
         String temp = visitChildren(ctx);
-        if(ctx.getChildCount() == 1)
+        if(ctx.getChildCount() == 1) {
             return temp;
-        else if(ctx.getChild(0).getText().equals("(")) {
+        } else if(ctx.getChild(0).getText().equals("(")) {
             return "$" + count;
         } else {
             count += 1;
@@ -146,13 +152,59 @@ public class MyVisitor extends DemoBaseVisitor<String> {
     }
 
     /**
-     * @param ctx block 
+     * @param ctx
+     *            block
      */
     @Override
     public String visitBlock(BlockContext ctx) {
-        statements.add("BSTART");
+        if(ctx.getChildCount() > 0) {
+            if(ctx.getChild(0).getText().equals("IF")) {
+                statements.add("IF");
+                visitChildren(ctx);
+                int index=indexStack.pop();
+                String stmt = statements.get(index);
+                stmt += "," + (statements.size() + 1);
+                if(ctx.getChildCount()==3)
+                    stmt += "," + (statements.size() + 1);
+                statements.set(index, stmt);
+                
+               
+            } else if(ctx.getChild(0).getText().equals("{")) {
+                statements.add("BSTART");
+                visitChildren(ctx);
+                statements.add("BEND");
+            } else {
+                visitChildren(ctx);
+            }
+        }
+        return "";
+    }
+
+    @Override
+    public String visitElseblock(ElseblockContext ctx) {
+        statements.add("ELSE");
+        int index=indexStack.peek();
+        String stmt = statements.get(index);
+        stmt += "," + (statements.size());
+        statements.set(index, stmt);
         visitChildren(ctx);
-        statements.add("BEND");
+        return "";
+    }
+
+    @Override
+    public String visitCondition(ConditionContext ctx) {
+        visitChildren(ctx);
+        statements.add("CHECKT $" + count);
+        int index = statements.size() - 1;
+        indexStack.push(index);
+        return "";
+    }
+
+    @Override
+    public String visitMain(MainContext ctx) {
+        statements.add("MSTART");
+        visitChildren(ctx);
+        statements.add("MEND");
         return "";
     }
 
