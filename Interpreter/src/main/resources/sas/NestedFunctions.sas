@@ -5,6 +5,7 @@ MSTART
 GOTO add,2,1
 MEND
 FUNC add,x,y
+BSTART
 DCLRI z
 ADD z,x,y
 PRINT "THE sum is "
@@ -14,11 +15,14 @@ BSTART
 STORE m,9
 GOTO sub,m,z
 BEND
+BEND
 FEND
 FUNC sub,x,y
+BSTART
 DCLRI z
 SUB z,x,y
 PRINT "THE sub is "
 PRINTLN z
+BEND
 FEND
 PEND

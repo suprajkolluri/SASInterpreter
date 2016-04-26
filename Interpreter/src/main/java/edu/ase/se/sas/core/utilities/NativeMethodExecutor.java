@@ -148,6 +148,16 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 		}
 	},
 	/**
+	 * 
+	 */
+	REM {
+		@Override
+		public boolean execute(String params) throws RuntimeException {
+			doMathOp("REM", params);
+			return true;
+		}
+	},
+	/**
 	 * Compares if first operand is less than the second and stores true or
 	 * false in a variable.
 	 */
@@ -243,6 +253,26 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 		}
 	},
 	/**
+	 * Compares if first operand is not equal to the second and stores true or
+	 * false in a variable.
+	 */
+	NEQ {
+		@Override
+		public boolean execute(String params) throws RuntimeException {
+			Entry entry = Runtime.entryStack.peek();
+			int scope = entry.symbolTable.size();
+			Map<String, Object> valMap = entry.symbolTable.get(scope);
+			String[] paramArr = Common.getParams(params);
+			String varName = paramArr[0].trim();
+			String opr1 = paramArr[1].trim();
+			String opr2 = paramArr[2].trim();
+			Object val1 = Common.getParsedValue(opr1);
+			Object val2 = Common.getParsedValue(opr2);
+			valMap.put(varName, val1 != val2);
+			return true;
+		}
+	},
+	/**
 	 * Increments the scope in the {@link Entry#symbolTable}.
 	 */
 	BSTART {
@@ -263,9 +293,8 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 			Entry entry = Runtime.entryStack.peek();
 			int scope = entry.symbolTable.size();
 			entry.symbolTable.remove(scope);
-			if (Runtime.inIf) {
-				Runtime.inIf = false;
-				Runtime.runCode(Runtime.ifTrueLine);
+			if (!Runtime.ifStack.isEmpty()) {
+				Runtime.runCode(Runtime.ifStack.pop());
 				return false;
 			}
 			return true;
@@ -345,8 +374,8 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 			Object returnVal = Common.getParsedValue(params);
 			Runtime.returnValStack.push(returnVal);
 			Runtime.entryStack.pop();
-			if (Runtime.inIf) {
-				Runtime.inIf = false;
+			if (!Runtime.ifStack.isEmpty()) {
+				Runtime.ifStack.pop();
 			}
 			return false;
 		}
@@ -357,7 +386,6 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 	IF {
 		@Override
 		public boolean execute(String params) throws RuntimeException {
-			Runtime.inIf = true;
 			return true;
 		}
 	},
@@ -367,7 +395,6 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 	ELSE {
 		@Override
 		public boolean execute(String params) throws RuntimeException {
-			Runtime.inIf = false;
 			return true;
 		}
 	},
@@ -391,8 +418,8 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 			}
 
 			if (value) {
-				if (Runtime.inIf) {
-					Runtime.ifTrueLine = opr1;
+				if (paramArr.length > 2) {
+					Runtime.ifStack.push(opr1);
 				}
 				Runtime.runCode(Runtime.execLine + 1);
 			} else {
@@ -452,6 +479,9 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 			break;
 		case "GTE":
 			Common.storeValue(varName, val1 >= val2);
+			break;
+		case "REM":
+			Common.storeValue(varName, val1 % val2);
 			break;
 		}
 	}
