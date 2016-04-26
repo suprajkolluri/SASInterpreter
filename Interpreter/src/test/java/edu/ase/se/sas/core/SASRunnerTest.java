@@ -9,7 +9,7 @@ public class SASRunnerTest {
 
 	public static void main(String[] args) {
 		String errorPrefix = "Unable to interpret the code, Reason: ";
-		String fileName = "C:/Users/Supraj/git/SASInterpreter/Interpreter/src/main/resources/sas/TowerofHanoi.SAS";// args[0];
+		String fileName = "/Users/schang/Google Drive/SER 502/Proj 1/SASInterpreter/Compiler/IntermediateOutput.txt";// args[0];
 		try {
 			Loader loader = new Loader(fileName);
 			Runtime.run(loader);
