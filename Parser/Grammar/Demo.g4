@@ -12,10 +12,12 @@ main:MSTART block MEND NEWLINE
 	  
 block:(exp NEWLINE)*
 			|BSTART NEWLINE block BEND NEWLINE
-			|IF '('conditional')' block
-            |IF '('conditional')' block ELSE (WS)* block  
+			|IF condition block
+            |IF condition block ELSE (WS)* block  
 	        |WHILE '('conditional')' block;			
              
+condition:'('conditional')';			 
+			 
 funcblock: BSTART NEWLINE block (returnexp NEWLINE)? BEND NEWLINE;
 	  
 IF:'IF';
