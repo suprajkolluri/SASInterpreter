@@ -282,8 +282,7 @@ public class MyVisitor extends DemoBaseVisitor<String> {
     @Override
     public String visitFuncDeclare(FuncDeclareContext ctx) {
     	// TODO Auto-generated method stub
-    	System.out.println(ctx.getText());
-    	statements.add("FUNC "+ctx.getChild(2).getText()+",");
+    	statements.add("FUNC "+ctx.getChild(2).getText());
     	visitChildren(ctx);
     	return "";
     }
@@ -297,7 +296,7 @@ public class MyVisitor extends DemoBaseVisitor<String> {
     	String statement=statements.get(index);
     	int len=ctx.getChildCount();
         if(len>2){
-    	statement+=ctx.getChild(1).getText();
+    	statement+=","+ctx.getChild(1).getText();
         for(int i=3;i<len;i+=2){
         	statement+=","+ctx.getChild(i);
         }
@@ -325,7 +324,7 @@ public class MyVisitor extends DemoBaseVisitor<String> {
     	String statement=statements.get(index);
     	int len=ctx.getChildCount();
         if(len>2){
-    	statement+=ctx.getChild(1).getText();
+    	statement+=","+ctx.getChild(1).getText();
         for(int i=3;i<len;i+=2){
         	statement+=","+ctx.getChild(i);
         }
@@ -338,7 +337,7 @@ public class MyVisitor extends DemoBaseVisitor<String> {
     @Override
     public String visitFuncCall(FuncCallContext ctx) {
     	// TODO Auto-generated method stub
-    	statements.add("GOTO "+ctx.getChild(0).getText()+",");
+    	statements.add("GOTO "+ctx.getChild(0).getText());
     	visitChildren(ctx);
     	return "";
      
@@ -362,14 +361,15 @@ public class MyVisitor extends DemoBaseVisitor<String> {
     @Override
     public String visitPrint(PrintContext ctx) {
     	// TODO Auto-generated method stub
-    statements.add("PRINT "+ctx.getChild(2));
+    statements.add("PRINT \""+ctx.getChild(2).getText()+"\"");
     return "";
     }
     
     @Override
     public String visitPrintln(PrintlnContext ctx) {
     	// TODO Auto-generated method stub
-    	statements.add("PRINTLN "+ctx.getChild(2));
+    	System.out.println(ctx.getChild(2).getText());
+    	statements.add("PRINTLN \""+ctx.getChild(2).getText()+"\"");
         return "";    
     }
     

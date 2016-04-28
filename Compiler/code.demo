@@ -1,3 +1,16 @@
 [
-
+FUNCTION funcWithIfElseIf(){
+IF(T){
+INTEGER a
+a=4+1
+}
+ELSE IF(T AND F){
+INTEGER b
+b=5+9
+}
+}
+--
+funcWithIfELseIf()
+PRINTLN "HELLO"
+!!
 ]
