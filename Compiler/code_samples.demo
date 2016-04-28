@@ -1,0 +1,46 @@
+[
+FUNCTION factIter(a){
+INTEGER b
+b=1
+WHILE(a>0){
+b=b*a
+a=a-1
+}
+RETURN b
+}
+FUNCTION factRec(n){
+INTEGER b
+b=1
+IF(n>0){
+b=n
+n=n-1
+INTEGER temp
+temp=fact(n)
+b=b*temp
+}
+RETURN b
+}
+FUNCTION funcWithIfElse(){
+IF(T){
+INTEGER a
+a=4+1
+}
+ELSE{
+INTEGER b
+b=5+9
+}
+}
+--
+STACKI si
+STACKB sb
+STACKSTR ss
+PUSH(si,1)
+INTEGER a
+POP(a,si)
+INTEGER a
+INTEGER b
+a=factIter(2)
+b=factRec(2)
+funcWithIfElse()
+!!
+}
