@@ -14,7 +14,7 @@ import asu.parser.DemoParser;
 
 public class Main {
 
-    private static final String fileName = "IntermediateOutput.txt";
+    private static final String fileName = "IntermediateOutput.sas";
 
     public static void main(String args[]) throws Exception {
         ANTLRInputStream inputStream = new ANTLRFileStream("code.demo");

@@ -1,0 +1,26 @@
+[
+FUNCTION funcWithIfWhile(a){
+INTEGER b
+b=0
+IF(a<5){
+b=1
+WHILE(a>0){
+b=b*a
+a=a-1
+}
+}
+ELSE IF(a!=8){
+b=0
+WHILE(a>0){
+b=b+a
+a=a-1
+}
+}
+RETURN b
+}
+--
+INTEGER a
+a=funcWithIfWhile(10)
+PRINTLN a
+!!
+]

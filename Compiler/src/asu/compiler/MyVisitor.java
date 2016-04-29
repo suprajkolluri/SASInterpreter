@@ -117,11 +117,11 @@ public class MyVisitor extends DemoBaseVisitor<String> {
         visitChildren(ctx);
         if(ctx.getChild(0).getText().equals("NOT")) {
             count += 1;
-            statements.add(ctx.getChild(0).getText() + " $" + count + " " + ctx.getChild(2).getText());
+            statements.add(ctx.getChild(0).getText() + " $" + count + "," + ctx.getChild(2).getText());
             return "$" + count;
         } else if(ctx.BOOL() != null) {
             count += 1;
-            statements.add("STORE " + " $" + count + " " + ctx.getText());
+            statements.add("STORE " + " $" + count + "," + ctx.getText());
             return "$" + count;
 
         }
@@ -157,7 +157,7 @@ public class MyVisitor extends DemoBaseVisitor<String> {
             return "$" + count;
         } else {
             count += 1;
-            statements.add(getCOperation(ctx.getChild(1).getText()) + " $" + count + " " + temp.replace("\n", " "));
+            statements.add(getCOperation(ctx.getChild(1).getText()) + " $" + count + "," + temp.replace("\n", ","));
             return "$" + count;
         }
     }
@@ -173,7 +173,7 @@ public class MyVisitor extends DemoBaseVisitor<String> {
             return "$" + count;
         } else {
             count += 1;
-            statements.add(getEOperation(ctx.getChild(1).getText()) + " $" + count + " " + temp.replace("\n", " "));
+            statements.add(getEOperation(ctx.getChild(1).getText()) + " $" + count + "," + temp.replace("\n", ","));
             return "$" + count;
         }
     }
@@ -361,15 +361,15 @@ public class MyVisitor extends DemoBaseVisitor<String> {
     @Override
     public String visitPrint(PrintContext ctx) {
     	// TODO Auto-generated method stub
-    statements.add("PRINT \""+ctx.getChild(2).getText()+"\"");
+    statements.add("PRINT "+ctx.getChild(2).getText());
     return "";
     }
     
     @Override
     public String visitPrintln(PrintlnContext ctx) {
     	// TODO Auto-generated method stub
-    	System.out.println(ctx.getChild(2).getText());
-    	statements.add("PRINTLN \""+ctx.getChild(2).getText()+"\"");
+    	//System.out.println(ctx.getChild(2).getText());
+    	statements.add("PRINTLN "+ctx.getChild(2).getText()+"");
         return "";    
     }
     
@@ -386,11 +386,11 @@ public class MyVisitor extends DemoBaseVisitor<String> {
     	// TODO Auto-generated method stub
         if(ctx.getChildCount()==3){
         	if(ctx.getChild(0).getText().equals("STACKI"))
-        		statements.add("DECLARESI "+ctx.getChild(2).getText());
+        		statements.add("DCLRSI "+ctx.getChild(2).getText());
         	else if(ctx.getChild(0).getText().equals("STACKB"))
-        		statements.add("DECLARESB "+ctx.getChild(2).getText());
+        		statements.add("DCLRSB "+ctx.getChild(2).getText());
         	else
-        		statements.add("DECLARESS "+ctx.getChild(2).getText());
+        		statements.add("DCLRSS "+ctx.getChild(2).getText());
         		
         }
     return "";	

@@ -1,0 +1,16 @@
+[
+FUNCTION factIter(a){
+INTEGER b
+b=1
+WHILE(a>0){
+b=b*a
+a=a-1
+}
+RETURN b
+}
+--
+INTEGER a
+a=factIter(9)
+PRINTLN a
+!!
+]

@@ -1,0 +1,19 @@
+[
+FUNCTION factRec(n){
+INTEGER b
+b=1
+IF(n>0){
+b=n
+n=n-1
+INTEGER temp
+temp=factRec(n)
+b=b*temp
+}
+RETURN b
+}
+--
+INTEGER a
+a=factRec(9)
+PRINTLN a
+!!
+]
