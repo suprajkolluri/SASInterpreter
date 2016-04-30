@@ -14,10 +14,12 @@ import asu.parser.DemoParser;
 
 public class Main {
 
-    private static final String fileName = "IntermediateOutput.sas";
+    private static String intermediateFileName="";
 
     public static void main(String args[]) throws Exception {
-        ANTLRInputStream inputStream = new ANTLRFileStream("code.demo");
+    	String fileName = args[0];
+    	intermediateFileName = fileName.replace(".demo", ".sas");
+        ANTLRInputStream inputStream = new ANTLRFileStream(fileName);
         DemoLexer lexer = new DemoLexer(inputStream);
         CommonTokenStream tokenStream = new CommonTokenStream(lexer);
         DemoParser parser = new DemoParser(tokenStream);
@@ -33,7 +35,14 @@ public class Main {
     }
 
     private static void write(String output) throws IOException {
-        File file = new File(fileName);
+        File file = new File(intermediateFileName);
+        if(!file.exists()){
+        	file.createNewFile();
+        }
+        else{
+        	file.delete();
+        	file.createNewFile();
+        }
         FileWriter fw = new FileWriter(file);
         fw.write(output);
         fw.close();
