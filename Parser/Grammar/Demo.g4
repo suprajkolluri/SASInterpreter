@@ -56,7 +56,8 @@ exp:  print
 	 |funcCall
 	 |stackdeclare
 	 |push
-	 |pop;
+	 |pop
+	 |read;
 
 print: 'PRINT' WS STRING
       |'PRINT' WS IDENTIFIER
@@ -182,3 +183,5 @@ push:'PUSH''('IDENTIFIER','INT')'
      |'PUSH''('IDENTIFIER','IDENTIFIER')';
      
 pop: 'POP''('IDENTIFIER','IDENTIFIER')';
+
+read:'READ' WS IDENTIFIER;

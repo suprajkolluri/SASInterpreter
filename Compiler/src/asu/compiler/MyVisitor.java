@@ -28,6 +28,7 @@ import asu.parser.DemoParser.PrintContext;
 import asu.parser.DemoParser.PrintlnContext;
 import asu.parser.DemoParser.ProgramContext;
 import asu.parser.DemoParser.PushContext;
+import asu.parser.DemoParser.ReadContext;
 import asu.parser.DemoParser.ReturnexpContext;
 import asu.parser.DemoParser.StackdeclareContext;
 
@@ -443,5 +444,12 @@ public class MyVisitor extends DemoBaseVisitor<String> {
     private String getEOperation(String operation) {
         if(operation.equals("==")) return "EQ";
         return "NEQ";
+    }
+    
+    @Override
+    public String visitRead(ReadContext ctx) {
+    	// TODO Auto-generated method stub
+    statements.add("READ "+ctx.getChild(2).getText());
+    return "";
     }
 }
