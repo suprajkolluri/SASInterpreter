@@ -285,6 +285,7 @@ public class MyVisitor extends DemoBaseVisitor<String> {
     	// TODO Auto-generated method stub
     	statements.add("FUNC "+ctx.getChild(2).getText());
     	visitChildren(ctx);
+    	statements.add("FEND");
     	return "";
     }
     
