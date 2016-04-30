@@ -172,4 +172,10 @@ public interface DemoVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitPop(DemoParser.PopContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link DemoParser#read}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRead(DemoParser.ReadContext ctx);
 }
