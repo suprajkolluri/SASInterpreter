@@ -138,6 +138,9 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 			return true;
 		}
 	},
+	/**
+	 * Used to push a value into the stack.
+	 */
 	PUSH {
 		@Override
 		public boolean execute(String params) throws RuntimeException {
@@ -151,6 +154,9 @@ public enum NativeMethodExecutor implements INativeMethodExecutor {
 			return true;
 		}
 	},
+	/**
+	 * Used to pop a value from the stack.
+	 */
 	POP {
 		@Override
 		public boolean execute(String params) throws RuntimeException {

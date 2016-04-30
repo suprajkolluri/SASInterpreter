@@ -23,6 +23,11 @@ public class SASRunner {
 			Runtime.run(loader);
 		} catch (FileReadException | RuntimeException e) {
 			System.out.println(errorPrefix + e.getClass() + " " + e.getMessage() + " " + e.getCause());
+			e.printStackTrace();
+		} catch (Exception e) {
+			System.out.println(errorPrefix + e.getClass() + " " + e.getMessage() + " " + e.getCause());
+			e.printStackTrace();
 		}
+
 	}
 }
